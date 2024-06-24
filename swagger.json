@@ -1,0 +1,462 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "description": "API for E-commerce application",
+    "title": "E-commerce API"
+  },
+  "host": "localhost:3000",
+  "securityDefinitions": {
+    "JWT": {
+      "in": "header",
+      "name": "Authorization",
+      "type": "apiKey"
+    }
+  },
+  "paths": {
+
+
+    "/api/users/signin": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Login",
+        "description": "User login to get token",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User Credentials",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Incorrect Credentials"
+          }
+        }
+      }
+    },
+    "/api/users/signup": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Signup",
+        "description": "User signup on the platform",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "New user credentials",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "New user added"
+          },
+          "500": {
+            "description": "Something went wrong"
+          }
+        }
+      }
+    },
+
+    "/api/products": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Get Products",
+        "description": "User will get all products",
+        "security": [{ "JWT": [] }],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Products"],
+        "summary": "Add Product",
+        "description": "Add a new product to the database",
+        "security": [{ "JWT": [] }],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Product data",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "price": { "type": "number" },
+                "category": { "type": "string" },
+                "description": { "type": "string" }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Product created"
+          },
+          "500": {
+            "description": "Something went wrong with the database"
+          }
+        }
+      }
+    },
+    "/api/products/{id}": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Get Product by ID",
+        "description": "Get a single product by its ID",
+        "security": [{ "JWT": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Product ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Product not found"
+          },
+          "500": {
+            "description": "Something went wrong with the database"
+          }
+        }
+      }
+    },
+    "/api/products/filter": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Filter Products",
+        "description": "Filter products based on minimum price and categories",
+        "security": [{ "JWT": [] }],
+        "parameters": [
+          {
+            "name": "minPrice",
+            "in": "query",
+            "required": false,
+            "type": "number",
+            "description": "Minimum price"
+          },
+          {
+            "name": "categories",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Comma-separated list of category IDs"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Something went wrong with the database"
+          }
+        }
+      }
+    },
+    "/api/products/rate": {
+      "post": {
+        "tags": ["Products"],
+        "summary": "Rate Product",
+        "description": "Rate a product",
+        "security": [{ "JWT": [] }],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Rating data",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "productID": { "type": "string" },
+                "rating": { "type": "number" }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rating saved"
+          },
+          "500": {
+            "description": "Something went wrong with the database"
+          }
+        }
+      }
+    },
+    "/api/products/averagePrice": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Average Price per Category",
+        "description": "Get the average price per category",
+        "security": [{ "JWT": [] }],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Something went wrong with the database"
+          }
+        }
+      }
+    },
+    
+    "/api/cartItems": {
+  "get": {
+    "tags": ["CartItems"],
+    "summary": "Get Cart Items",
+    "description": "Retrieve all items in the user's cart.",
+    "security": [{ "JWT": [] }],
+    "responses": {
+      "200": {
+        "description": "List of cart items",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "productID": { "type": "string" },
+                  "quantity": { "type": "number" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Something went wrong"
+      }
+    }
+  },
+  "post": {
+    "tags": ["CartItems"],
+    "summary": "Add Item to Cart",
+    "description": "Add a product to the user's cart.",
+    "security": [{ "JWT": [] }],
+    "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Details of new item to be added in cart",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "productID": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        ],
+    "responses": {
+      "201": {
+        "description": "Cart is updated"
+      },
+      "500": {
+        "description": "Something went wrong"
+      }
+    }
+  }
+},
+"/api/cartItems/{id}": {
+  "delete": {
+    "tags": ["CartItems"],
+    "summary": "Delete Cart Item",
+    "description": "Remove an item from the user's cart.",
+    "security": [{ "JWT": [] }],
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "ID of the cart item to delete",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Cart Item is removed"
+      },
+      "404": {
+        "description": "Item not found"
+      },
+      "500": {
+        "description": "Something went wrong"
+      }
+    }
+  }
+},
+"/api/likes": {
+  "get": {
+    "tags": ["Likes"],
+    "summary": "Get Likes",
+    "description": "Retrieve all likes for a given entity.",
+    "security": [{ "JWT": [] }],
+    "parameters": [
+      {
+        "name": "type",
+        "in": "query",
+        "required": true,
+        "description": "The type of the entity being liked (e.g., 'Product' or 'Category').",
+        "schema": {
+          "type": "string",
+          "enum": ["Product", "Category"]
+        }
+      },
+      {
+        "name": "id",
+        "in": "query",
+        "required": true,
+        "description": "The ID of the entity being liked.",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "List of likes",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "user": {
+                    "type": "object",
+                    "properties": {
+                      "_id": { "type": "string" },
+                      "name": { "type": "string" }
+                    }
+                  },
+                  "likeable": {
+                    "type": "object",
+                    "properties": {
+                      "_id": { "type": "string" },
+                      "title": { "type": "string" }  
+                    }
+                  },
+                  "on_model": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Something went wrong"
+      }
+    }
+  },
+  "post": {
+    "tags": ["Likes"],
+    "summary": "Like an Entity",
+    "description": "Like a product/categoory.",
+    "security": [{ "JWT": [] }],
+    "parameters": [
+      {
+        "name": "id",
+        "in": "query",
+        "required": true,
+        "description": "The ID of the entity being liked",
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "type",
+        "in": "query",
+        "required": true,
+        "description": "Type of entity being liked",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "201": {
+        "description": " liked successfully"
+      },
+      "400":{
+        "description":"Invalid"
+      },
+      "500": {
+        "description": "Something went wrong"
+      }
+    }
+  }
+},
+"/api/orders": {
+    "post": {
+      "tags": ["Orders"],
+      "summary": "Place an Order",
+      "description": "Create a new order for the user, process the payment, update stock, and clear the cart.",
+      "security": [
+        {
+          "JWT": []
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Order is created"
+        },
+        "500": {
+          "description": "Something went wrong"
+        }
+      }
+    }
+  }
+
+
+
+  }
+}
